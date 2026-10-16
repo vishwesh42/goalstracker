@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/types.ts","./src/components/goalform.tsx","./src/components/goalitem.tsx","./src/components/goallist.tsx","./src/components/goalstats.tsx","./src/components/jsondatabasemodal.tsx","./src/components/motivationalheader.tsx","./src/components/navbar.tsx","./src/data/initialdata.ts","./src/utils/storage.ts"],"version":"5.7.3"}

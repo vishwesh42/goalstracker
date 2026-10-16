@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-16T01:40:00.000Z",
+  "motivationalHeading": "Every small step today builds the extraordinary tomorrow. Stay relentless.",
+  "motivationalAuthor": "Daily Focus",
+  "goals": [
+    {
+      "id": "goal-1",
+      "title": "Deploy Goal Tracker frontend to Vercel for free",
+      "category": "Career",
+      "priority": "high",
+      "completed": false,
+      "createdAt": "2026-10-16T01:00:00.000Z",
+      "completedAt": null
+    },
+    {
+      "id": "goal-2",
+      "title": "Complete 45 minutes of deep focus without distractions",
+      "category": "Productivity",
+      "priority": "high",
+      "completed": false,
+      "createdAt": "2026-10-16T01:05:00.000Z",
+      "completedAt": null
+    },
+    {
+      "id": "goal-3",
+      "title": "Drink 2.5 Liters of water & stay hydrated",
+      "category": "Health",
+      "priority": "medium",
+      "completed": true,
+      "createdAt": "2026-10-15T08:00:00.000Z",
+      "completedAt": "2026-10-15T18:30:00.000Z"
+    },
+    {
+      "id": "goal-4",
+      "title": "Review daily wins and plan top 3 priorities for tomorrow",
+      "category": "Personal",
+      "priority": "low",
+      "completed": false,
+      "createdAt": "2026-10-16T01:10:00.000Z",
+      "completedAt": null
+    }
+  ]
+}
+
