@@ -105,7 +105,7 @@ export const GoalList: React.FC<GoalListProps> = ({
               className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
                 selectedCategory === cat
                   ? 'bg-indigo-600 border-indigo-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 dark:hover:text-slate-200'
               }`}
             >
               {cat === 'all' ? 'All Categories' : cat}

@@ -59,7 +59,7 @@ export const GoalStats: React.FC<GoalStatsProps> = ({
           className={`p-3 rounded-xl border text-left transition-all ${
             activeFilter === 'all'
               ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700 ring-2 ring-indigo-500/20'
-              : 'bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300'
+              : 'bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
@@ -75,7 +75,7 @@ export const GoalStats: React.FC<GoalStatsProps> = ({
           className={`p-3 rounded-xl border text-left transition-all ${
             activeFilter === 'active'
               ? 'bg-amber-50/80 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 ring-2 ring-amber-500/20'
-              : 'bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300'
+              : 'bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
@@ -91,7 +91,7 @@ export const GoalStats: React.FC<GoalStatsProps> = ({
           className={`p-3 rounded-xl border text-left transition-all ${
             activeFilter === 'completed'
               ? 'bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 ring-2 ring-emerald-500/20'
-              : 'bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300'
+              : 'bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">

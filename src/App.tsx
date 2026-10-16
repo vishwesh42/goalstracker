@@ -20,7 +20,11 @@ export default function App() {
   const [gistConfig, setGistConfig] = useState<GistSyncConfig>(loadGistConfig);
   const [syncState, setSyncState] = useState<SyncState>('local');
   const [darkMode, setDarkMode] = useState<boolean>(() => {
-    return localStorage.getItem('goalflow_dark_mode') === 'true';
+    const savedTheme = localStorage.getItem('goalflow_theme');
+    if (savedTheme !== null) {
+      return savedTheme === 'dark';
+    }
+    return true; // Default to dark mode
   });
 
   // Sync to Gist helper
@@ -70,9 +74,11 @@ export default function App() {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('goalflow_theme', 'dark');
       localStorage.setItem('goalflow_dark_mode', 'true');
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('goalflow_theme', 'light');
       localStorage.setItem('goalflow_dark_mode', 'false');
     }
   }, [darkMode]);
