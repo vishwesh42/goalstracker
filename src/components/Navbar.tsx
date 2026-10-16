@@ -1,12 +1,15 @@
 import React, { useRef } from 'react';
-import { Target, Download, Upload, FileCode, Moon, Sun } from 'lucide-react';
-import { GoalsDatabase } from '../types';
+import { Target, Download, Upload, FileCode, Moon, Sun, Cloud, RefreshCw, Check, AlertCircle } from 'lucide-react';
+import { GoalsDatabase, GistSyncConfig, SyncState } from '../types';
 import { exportDatabaseJson } from '../utils/storage';
 
 interface NavbarProps {
   database: GoalsDatabase;
   onImportJson: (data: GoalsDatabase) => void;
   onOpenJsonModal: () => void;
+  onOpenGistModal: () => void;
+  gistConfig: GistSyncConfig;
+  syncState: SyncState;
   darkMode: boolean;
   onToggleDarkMode: () => void;
 }
@@ -15,6 +18,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   database,
   onImportJson,
   onOpenJsonModal,
+  onOpenGistModal,
+  gistConfig,
+  syncState,
   darkMode,
   onToggleDarkMode,
 }) => {
@@ -53,17 +59,55 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-base tracking-tight text-white">GoalFlow</span>
-              <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                .json Database Connected
-              </span>
+              
+              {/* Cloud Sync Status Pill */}
+              <button
+                type="button"
+                onClick={onOpenGistModal}
+                className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-all hover:scale-105"
+                title="Click to configure GitHub Gist live database"
+              >
+                {gistConfig.enabled ? (
+                  syncState === 'syncing' ? (
+                    <span className="flex items-center gap-1 text-amber-300 bg-amber-500/10 border-amber-500/30">
+                      <RefreshCw className="w-3 h-3 animate-spin text-amber-400" />
+                      Syncing Gist...
+                    </span>
+                  ) : syncState === 'error' ? (
+                    <span className="flex items-center gap-1 text-rose-300 bg-rose-500/10 border-rose-500/30">
+                      <AlertCircle className="w-3 h-3 text-rose-400" />
+                      Sync Error
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1 text-emerald-300 bg-emerald-500/10 border-emerald-500/30">
+                      <Check className="w-3 h-3 text-emerald-400" />
+                      Gist Cloud Synced
+                    </span>
+                  )
+                ) : (
+                  <span className="flex items-center gap-1 text-indigo-300 bg-indigo-500/10 border-indigo-500/30 hover:bg-indigo-500/20">
+                    <Cloud className="w-3 h-3 text-indigo-400" />
+                    Connect Cloud Gist
+                  </span>
+                )}
+              </button>
             </div>
-            <p className="text-[10px] text-slate-400 hidden sm:block">Frontend-only • Zero-config Vercel deployment</p>
+            <p className="text-[10px] text-slate-400 hidden sm:block">Frontend-only • Live JSON database</p>
           </div>
         </div>
 
         {/* Database actions */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Mobile Gist button */}
+          <button
+            type="button"
+            onClick={onOpenGistModal}
+            className="sm:hidden flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-slate-800 border border-slate-700"
+            title="GitHub Gist Cloud Database"
+          >
+            <Cloud className="w-3.5 h-3.5 text-indigo-400" />
+          </button>
+
           {/* Hidden File Input */}
           <input
             type="file"
@@ -116,4 +160,3 @@ export const Navbar: React.FC<NavbarProps> = ({
     </nav>
   );
 };
-

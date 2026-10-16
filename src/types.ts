@@ -24,3 +24,12 @@ export interface GoalsDatabase {
 
 export type FilterStatus = 'all' | 'active' | 'completed';
 
+export interface GistSyncConfig {
+  enabled: boolean;
+  token: string;
+  gistId: string;
+  gistUrl?: string;
+  lastSyncedAt?: string;
+}
+
+export type SyncState = 'local' | 'syncing' | 'synced' | 'error';

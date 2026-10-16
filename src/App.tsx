@@ -1,29 +1,70 @@
-import { useState, useEffect } from 'react';
-import { GoalsDatabase, Goal, FilterStatus } from './types';
+import { useState, useEffect, useCallback } from 'react';
+import { GoalsDatabase, Goal, FilterStatus, GistSyncConfig, SyncState } from './types';
 import { INITIAL_DATABASE } from './data/initialData';
 import { loadDatabase, saveDatabase, triggerCelebration } from './utils/storage';
+import { loadGistConfig, fetchGistDatabase, saveGistDatabase } from './utils/gist';
 import { Navbar } from './components/Navbar';
 import { MotivationalHeader } from './components/MotivationalHeader';
 import { GoalStats } from './components/GoalStats';
 import { GoalForm } from './components/GoalForm';
 import { GoalList } from './components/GoalList';
 import { JsonDatabaseModal } from './components/JsonDatabaseModal';
-import { Rocket, ExternalLink, ShieldCheck, Heart } from 'lucide-react';
+import { GistSyncModal } from './components/GistSyncModal';
+import { Rocket, ExternalLink, ShieldCheck, Heart, Cloud, Sparkles } from 'lucide-react';
 
 export default function App() {
   const [database, setDatabase] = useState<GoalsDatabase>(INITIAL_DATABASE);
   const [activeFilter, setActiveFilter] = useState<FilterStatus>('all');
   const [isJsonModalOpen, setIsJsonModalOpen] = useState(false);
+  const [isGistModalOpen, setIsGistModalOpen] = useState(false);
+  const [gistConfig, setGistConfig] = useState<GistSyncConfig>(loadGistConfig);
+  const [syncState, setSyncState] = useState<SyncState>('local');
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('goalflow_dark_mode') === 'true';
   });
 
-  // Load database on mount
-  useEffect(() => {
-    loadDatabase().then((data) => {
-      setDatabase(data);
-    });
+  // Sync to Gist helper
+  const syncToGist = useCallback(async (data: GoalsDatabase, config: GistSyncConfig) => {
+    if (!config.enabled || !config.token || !config.gistId) {
+      setSyncState('local');
+      return;
+    }
+
+    try {
+      setSyncState('syncing');
+      await saveGistDatabase(config.token, config.gistId, data);
+      setSyncState('synced');
+    } catch (err) {
+      console.error('Failed to sync changes to GitHub Gist:', err);
+      setSyncState('error');
+    }
   }, []);
+
+  // Initial load: prefer GitHub Gist if configured, fallback to local storage
+  useEffect(() => {
+    async function initData() {
+      if (gistConfig.enabled && gistConfig.token && gistConfig.gistId) {
+        setSyncState('syncing');
+        try {
+          const res = await fetchGistDatabase(gistConfig.token, gistConfig.gistId);
+          setDatabase(res.database);
+          saveDatabase(res.database); // Cache locally
+          setSyncState('synced');
+          return;
+        } catch (err) {
+          console.warn('Could not load from Gist, falling back to local database:', err);
+          setSyncState('error');
+        }
+      }
+
+      // Fallback
+      const local = await loadDatabase();
+      setDatabase(local);
+      setSyncState('local');
+    }
+
+    initData();
+  }, [gistConfig.enabled, gistConfig.token, gistConfig.gistId]);
 
   // Update dark mode class on document
   useEffect(() => {
@@ -36,10 +77,13 @@ export default function App() {
     }
   }, [darkMode]);
 
-  // Sync database updates
+  // Main state updater: updates React state, saves locally, and syncs to Gist
   const updateDatabaseState = (newData: GoalsDatabase) => {
     setDatabase(newData);
     saveDatabase(newData);
+    if (gistConfig.enabled) {
+      syncToGist(newData, gistConfig);
+    }
   };
 
   // Add goal
@@ -129,6 +173,20 @@ export default function App() {
     });
   };
 
+  // Handle Gist configuration save
+  const handleSaveGistConfig = (newConfig: GistSyncConfig, fetchedData?: GoalsDatabase) => {
+    setGistConfig(newConfig);
+    if (fetchedData) {
+      setDatabase(fetchedData);
+      saveDatabase(fetchedData);
+      setSyncState('synced');
+    } else if (newConfig.enabled) {
+      setSyncState('synced');
+    } else {
+      setSyncState('local');
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {/* Top Navbar */}
@@ -136,6 +194,9 @@ export default function App() {
         database={database}
         onImportJson={updateDatabaseState}
         onOpenJsonModal={() => setIsJsonModalOpen(true)}
+        onOpenGistModal={() => setIsGistModalOpen(true)}
+        gistConfig={gistConfig}
+        syncState={syncState}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode(!darkMode)}
       />
@@ -149,6 +210,33 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        {/* Cloud Sync Announcement banner if not connected */}
+        {!gistConfig.enabled && (
+          <div className="bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-900/60 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fadeIn">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-indigo-600 text-white shrink-0">
+                <Cloud className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  Want your goals.json in the cloud automatically?
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Connect GitHub Gist to auto-save every add/delete to your live <code className="font-mono text-indigo-600 dark:text-indigo-400">goals.json</code> file!
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsGistModalOpen(true)}
+              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shrink-0 transition-colors shadow-sm"
+            >
+              Connect Gist (1-Click)
+            </button>
+          </div>
+        )}
+
         {/* Progress & Quick Metrics */}
         <GoalStats
           goals={database.goals}
@@ -204,7 +292,7 @@ export default function App() {
             </span>
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              Automatic PWA / Mobile Friendly
+              Cloud Gist Sync Ready
             </span>
           </div>
         </div>
@@ -224,7 +312,15 @@ export default function App() {
         database={database}
         onUpdateDatabase={updateDatabaseState}
       />
+
+      {/* GitHub Gist Cloud Sync Modal */}
+      <GistSyncModal
+        isOpen={isGistModalOpen}
+        onClose={() => setIsGistModalOpen(false)}
+        config={gistConfig}
+        onSaveConfig={handleSaveGistConfig}
+        currentDatabase={database}
+      />
     </div>
   );
 }
-

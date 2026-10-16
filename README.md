@@ -24,10 +24,14 @@
   - **One-click Export**: Download your updated `goals.json` anytime as a backup or portable file.
   - **One-click Import**: Upload any `.json` file to restore or load external goal datasets.
   - **Live Raw JSON Editor**: View and modify your JSON database directly within the app.
+- ☁️ **Option A: GitHub Gist Live Cloud `.json` Database (100% Frontend)**:
+  - Connect your GitHub token with 1 click.
+  - Automatically creates and updates a private `goals.json` on GitHub Gist!
+  - When you add, complete, or delete goals, it pushes changes to your cloud `goals.json` in real time with version history.
 - 🌙 **Dark & Light Mode**:
   - Built-in theme switcher saved to preferences.
 - ⚡ **Zero-Backend Architecture**:
-  - No server, database, or API keys required.
+  - No backend server required.
   - 100% free hosting forever on Vercel, Netlify, or GitHub Pages.
 
 ---
