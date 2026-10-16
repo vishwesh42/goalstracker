@@ -289,3 +289,4 @@ export const GistSyncModal: React.FC<GistSyncModalProps> = ({
     </div>
   );
 };
+
